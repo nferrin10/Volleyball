@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import * as PDFLib from '../public/vendor/pdf-lib.mjs';
+import { simulateMatch } from '../tests/sim.mjs';
+import { buildSheet } from '../public/js/sheet/layout.js';
+import { makeMeasurer, renderPDF } from '../public/js/sheet/render.js';
+const out = process.argv[2];
+const m = simulateMatch();
+const measure = await makeMeasurer(PDFLib);
+const sheet = buildSheet(m.state, { practice: false }, measure);
+fs.writeFileSync(out, await renderPDF(PDFLib, sheet, { title: 'sample' }));
+console.log('pages', sheet.pages.length);

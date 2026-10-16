@@ -1,0 +1,13 @@
+import { chromium } from 'playwright-core';
+const SP = process.argv[2];
+const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+const page = await ctx.newPage();
+const errs = [];
+page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') errs.push(m.type() + ': ' + m.text()); });
+page.on('pageerror', (e) => errs.push('PAGEERROR: ' + e.message));
+await page.goto('http://localhost:8099/');
+await page.waitForTimeout(800);
+await page.screenshot({ path: SP + '/shots/01-welcome.png' });
+console.log(errs.join('\n') || 'no console errors');
+await browser.close();

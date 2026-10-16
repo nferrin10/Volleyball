@@ -1,0 +1,31 @@
+import { launch, BASE, DEVICES, track } from './lib.mjs';
+const SP = process.argv[2];
+const browser = await launch();
+const ctx = await browser.newContext(DEVICES.iphone);
+const page = await ctx.newPage();
+const errs = []; track(page, errs);
+await page.goto(BASE + '/');
+await page.getByText('SKIP TOUR').click();
+await page.getByText('New Game').first().click();
+await page.waitForSelector('[data-tour="team-home"]');
+const fill = async (side, name, nums) => {
+  const card = page.locator(`[data-tour="team-${side}"]`);
+  await card.locator('input[placeholder*="team name"]').fill(name);
+  await card.locator('input[placeholder^="Quick add"]').fill(nums);
+  await card.getByText('Add all').click();
+};
+await fill('home', 'Wolves', '1 2 3 4 5 6 7 8 9 10');
+await fill('away', 'Hawks', '21 22 23 24 25 26 27 28');
+await page.screenshot({ path: SP + '/shots/02-teams.png' });
+await page.getByText('Next: lineup').click();
+await page.waitForSelector('[data-tour="lineup-home"]');
+for (const side of ['home','away']) { const c = page.locator(`[data-tour="lineup-${side}"]`); for (let i=0;i<6;i++) await c.locator('.chips .pchip:not(.used)').first().click(); }
+await page.locator('[data-tour="first-serve"] .serve-pick button').first().click();
+await page.screenshot({ path: SP + '/shots/03-lineup.png', fullPage: true });
+await page.locator('[data-tour="start-game"]').click();
+await page.waitForSelector('[data-tour="point-home"]');
+await page.locator('[data-tour="point-home"]').click();
+await page.locator('[data-tour="point-away"]').click();
+await page.screenshot({ path: SP + '/shots/04-live-iphone.png' });
+console.log(errs.join('\n') || 'no errors');
+await browser.close();
