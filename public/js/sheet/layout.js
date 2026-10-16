@@ -77,6 +77,13 @@ function fmtTime(t) {
   return `${h}:${m[2]} ${ap}`;
 }
 
+// Manual edits written over the finished sheet (see sheet/edits.js).
+function drawEdit(ops, e) {
+  if (e.cover) ops.push(o.rect(e.x - e.cover.w / 2, e.y - e.cover.h / 2, e.cover.w, e.cover.h, 0, { color: '#ffffff', fill: '#ffffff' }));
+  const s = clean(e.text);
+  if (s) { const size = e.size || 9; ops.push(o.text(s, e.x, e.y + size * 0.35, size, { font: 'b', align: 'c', color: INK })); }
+}
+
 // ---------------------------------------------------------------- the sheet
 
 export function buildSheet(S, game, measure, opts = {}) {
@@ -94,6 +101,7 @@ export function buildSheet(S, game, measure, opts = {}) {
       const set = S.sets[setNo - 1] || null;
       drawBlock(ops, BLOCK_Y0 + b * BLOCK_H, set, setNo, S, measure, cont, pages.length + 1);
     }
+    for (const e of setup.sheetEdits || []) if (e.page === pg) drawEdit(ops, e);
     if (game.practice || opts.watermark) {
       ops.push(o.text(clean(opts.watermark || 'PRACTICE GAME'), PAGE_W / 2, PAGE_H / 2 + 40, 90, { font: 'b', align: 'c', color: '#c0392b', opacity: 0.13, rot: 28 }));
     }

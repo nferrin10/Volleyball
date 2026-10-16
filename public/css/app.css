@@ -382,3 +382,6 @@ a.btn { text-decoration: none; }
   body.printing-qr .qr-box { width: 70vmin; border: 0; }
   body.printing-qr .qr-sign { font-size: 2.4rem; } body.printing-qr .qr-big { font-size: 2rem; } body.printing-qr .qr-sub { font-size: 1.4rem; }
 }
+
+/* Sheet editing */
+.sheetpage.editing { cursor: crosshair; outline: 3px solid #d92d20; }
