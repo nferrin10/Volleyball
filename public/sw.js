@@ -1,6 +1,6 @@
 // Service worker: makes the whole app work with no WiFi. Static files are cached on
 // install; the app is "cache first" with a background refresh.
-const VERSION = 'vb-v1';
+const VERSION = 'vb-v2';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'css/app.css',
   'js/app.js', 'js/ctx.js', 'js/util.js', 'js/store.js', 'js/session.js', 'js/reports.js', 'js/sync.js', 'js/tour.js', 'js/help.js', 'js/sample.js',
