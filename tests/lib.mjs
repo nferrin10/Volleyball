@@ -8,7 +8,7 @@ export const DEVICES = {
   laptop: { viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 },
 };
 export async function launch() {
-  return chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  return chromium.launch({ executablePath: process.env.PW_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
 }
 export function track(page, errs) {
   page.on('console', (m) => { if (m.type() === 'error') errs.push('console.error: ' + m.text()); });

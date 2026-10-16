@@ -11,7 +11,7 @@ await page.waitForSelector('[data-tour="team-home"]');
 const fill = async (side, name, nums) => {
   const card = page.locator(`[data-tour="team-${side}"]`);
   await card.locator('input[placeholder*="team name"]').fill(name);
-  await card.locator('input[placeholder^="Quick add"]').fill(nums);
+  await card.locator('[placeholder^="Quick add"]').fill(nums);
   await card.getByText('Add all').click();
 };
 await fill('home', 'Wolves', '1 2 3 4 5 6 7 8 9 10');

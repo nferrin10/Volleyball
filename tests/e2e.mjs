@@ -19,7 +19,7 @@ await page.locator('input[type=text][placeholder="e.g. Main Gym"]').fill('Main G
 for (const [side, name, nums, lib] of [['home', 'Wolves', '1 2 3 4 5 6 7 8 9 10', '13'], ['away', 'Hawks', '21 22 23 24 25 26 27 28', '31']]) {
   const card = page.locator(`[data-tour="team-${side}"]`);
   await card.locator('input[placeholder*="team name"]').fill(name);
-  await card.locator('input[placeholder^="Quick add"]').fill(nums);
+  await card.locator('[placeholder^="Quick add"]').fill(nums);
   await card.getByText('Add all').click();
   await card.locator('input[placeholder="#"]').fill(lib);
   await card.locator('input[type=checkbox]').check();

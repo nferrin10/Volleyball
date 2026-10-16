@@ -4,6 +4,7 @@ import { store } from '../store.js';
 import { createGame } from '../session.js';
 import { cmd, uid, DEFAULT_RULES, other, rulesOf } from '../engine/engine.js';
 import { sampleSetup, sampleLineup } from '../sample.js';
+import { parseRoster } from '../roster.js';
 
 const SIDE_LABEL = { home: 'Home team', away: 'Visiting team' };
 
@@ -73,21 +74,24 @@ export async function mount(root, { mode, params, query }, ctx) {
     nInp.dataset.nin = side;
     nInp.addEventListener('keydown', (e) => { if (e.key === 'Enter') add(); });
     nameP.addEventListener('keydown', (e) => { if (e.key === 'Enter') add(); });
-    const bulk = h('input', { class: 'inp', type: 'text', placeholder: 'Quick add: 1 4 7 9 10 12', 'aria-label': 'Add many numbers at once' });
+    const bulk = h('textarea', { class: 'inp', rows: 5, placeholder: 'Quick add or paste a roster:\n1 4 7 9 10 12\n12 Mia Lopez\n7L (libero)', 'aria-label': 'Add many numbers at once', autocapitalize: 'off', spellcheck: 'false' });
     const bulkAdd = () => {
-      const added = parseBulk(bulk.value, t);
-      if (added) { bulk.value = ''; rerender(); toast(`Added ${added} player${added > 1 ? 's' : ''}`); }
+      const { players: found, skipped } = parseRoster(bulk.value, t.players.map((p) => p.number));
+      for (const p of found) t.players.push({ id: uid(), number: p.number, name: p.name, libero: p.libero });
+      if (found.length) { bulk.value = ''; rerender(); }
+      if (found.length) toast(`Added ${found.length} player${found.length > 1 ? 's' : ''}` + (skipped.length ? `. Skipped: ${skipped.slice(0, 3).join(', ')}` : ''), { ms: skipped.length ? 5500 : 3200 });
+      else if (skipped.length) toast(`Could not read: ${skipped.slice(0, 3).join(', ')}`, { ms: 5000 });
     };
-    bulk.addEventListener('keydown', (e) => { if (e.key === 'Enter') bulkAdd(); });
+    bulk.addEventListener('keydown', (e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) bulkAdd(); });
     const players = [...t.players].sort((a, b) => (+a.number) - (+b.number));
     return h('div', { class: 'card team-edit ' + side, 'data-tour': 'team-' + side },
       h('h2', { style: { marginBottom: '10px', color: 'var(--navy)' } }, SIDE_LABEL[side]),
       h('label', { class: 'field' }, h('span', null, 'Team name'), nameInp),
       savedSel ? h('div', { class: 'field' }, savedSel) : null,
       h('div', { class: 'field', 'data-tour': 'roster-' + side }, h('span', null, `Players (${t.players.filter((p) => !p.libero).length}${t.players.some((p) => p.libero) ? ' + libero' : ''})`),
-        h('div', { class: 'chips' }, players.length ? players.map((p) => h('button', { class: 'pchip' + (p.libero ? ' lib' : ''), onclick: () => editPlayer(t, p, rerender) }, '#' + p.number, p.name ? h('small', null, p.name) : null, p.libero ? h('small', null, 'Libero') : null)) : h('span', { class: 'muted' }, 'No players yet — add numbers below.')),
+        h('div', { class: 'chips' }, players.length ? players.map((p) => h('button', { class: 'pchip' + (p.libero ? ' lib' : ''), onclick: () => editPlayer(t, p, rerender) }, h('b', { class: 'pn' }, p.number), p.name ? h('small', null, p.name) : null, p.libero ? h('small', null, 'Libero') : null)) : h('span', { class: 'muted' }, 'No players yet — add numbers below.')),
         h('div', { class: 'addrow' }, nInp, nameP, h('label', { class: 'check', title: 'Libero' }, lib, 'Libero'), h('button', { class: 'btn primary', onclick: add }, 'Add')),
-        h('div', { class: 'addrow', style: { gridTemplateColumns: '1fr auto', marginTop: '8px' } }, bulk, h('button', { class: 'btn', onclick: bulkAdd }, 'Add all'))));
+        h('div', { class: 'addrow', style: { gridTemplateColumns: '1fr auto', marginTop: '8px', alignItems: 'start' } }, bulk, h('button', { class: 'btn', onclick: bulkAdd }, 'Add all'))));
   }
 
   function rulesCard() {
@@ -157,22 +161,6 @@ function initialLineup(d) {
   const L = { home: make('home'), away: make('away'), firstServe: null };
   if (d.practice) { const s = setupFrom(d); L.home = sampleLineup(s, 'home'); L.away = sampleLineup(s, 'away'); L.firstServe = 'home'; }
   return L;
-}
-
-function parseBulk(text, team) {
-  let added = 0;
-  const parts = text.split(/[,;\n]+/).map((s) => s.trim()).filter(Boolean);
-  const add = (num, name) => {
-    const n = String(+num);
-    if (!/^\d{1,3}$/.test(String(num)) || team.players.some((p) => p.number === n)) return;
-    team.players.push({ id: uid(), number: n, name: (name || '').trim(), libero: false });
-    added++;
-  };
-  for (const p of parts) {
-    if (/^\d+(\s+\d+)+$/.test(p)) p.split(/\s+/).forEach((n) => add(n, ''));
-    else { const m = /^(\d{1,3})\s*(.*)$/.exec(p); if (m) add(m[1], m[2]); }
-  }
-  return added;
 }
 
 function field(label, input) { return h('label', { class: 'field' }, h('span', null, label), input); }

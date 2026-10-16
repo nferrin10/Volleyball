@@ -385,3 +385,9 @@ a.btn { text-decoration: none; }
 
 /* Sheet editing */
 .sheetpage.editing { cursor: crosshair; outline: 3px solid #d92d20; }
+
+/* Jersey numbers lead; names are the quiet detail */
+.pchip .pn { font-size: 1.3rem; font-weight: 900; color: var(--navy); line-height: 1; }
+.pchip.lib .pn { color: #6d28d9; }
+.pchip.sel .pn { color: #fff; }
+.pchip { min-height: 48px; }
