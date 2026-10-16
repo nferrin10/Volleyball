@@ -355,3 +355,30 @@ table.stats tr.tot td { font-weight: 800; border-top: 2px solid var(--line); }
 @media (max-width: 699px) { .statbtns { gap: 8px; } .sbtn { font-size: 1.05rem; } }
 @media (max-width: 360px) { .b-short { display: none; } .appbar { gap: 6px; padding-left: 10px; padding-right: 10px; } }
 .tools .btn { white-space: nowrap; } @media (max-width: 360px) { .tools .btn { font-size: .8rem; padding: 0 2px; } }
+
+/* Live video dialog */
+.lv-step { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.lv-step > b { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--navy); color: #fff; }
+.lv-step p { margin: 2px 0 10px; color: var(--muted); }
+.lv-row { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+.lv-row .btn { flex: 1; }
+.lv-status { margin: 8px 0 0; font-size: .92rem; overflow-wrap: anywhere; color: var(--muted); }
+.lv-status.ok { color: var(--green); font-weight: 700; }
+.lv-status.bad { color: var(--red); }
+.btn.lock { opacity: .45; pointer-events: none; }
+a.btn { text-decoration: none; }
+
+/* Share the app (QR) */
+.qr-box { width: min(260px, 70vw); margin: 8px auto; background: #fff; padding: 6px; border: 2px solid var(--line); border-radius: 14px; }
+.qr-box svg { width: 100%; height: auto; display: block; }
+.qr-sign, .qr-big, .qr-sub, .qr-url { text-align: center; margin: 4px 0; }
+.qr-sign { color: var(--navy); font-size: 1.3rem; }
+.qr-big { font-weight: 800; font-size: 1.15rem; color: var(--navy); }
+.qr-url { font-size: .85rem; color: var(--muted); overflow-wrap: anywhere; }
+@media print {
+  body.printing-qr #app, body.printing-qr #toasts, body.printing-qr .no-print, body.printing-qr .modal-title { display: none !important; }
+  body.printing-qr .modal-back { position: static; background: none; display: block; padding: 0; }
+  body.printing-qr .modal { box-shadow: none; max-width: none; padding: 40px 0; }
+  body.printing-qr .qr-box { width: 70vmin; border: 0; }
+  body.printing-qr .qr-sign { font-size: 2.4rem; } body.printing-qr .qr-big { font-size: 2rem; } body.printing-qr .qr-sub { font-size: 1.4rem; }
+}

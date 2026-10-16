@@ -10,6 +10,7 @@ import {
 import { sheetModel, statRows, resultLine, sheetPDF, fileBase } from '../reports.js';
 import { pageToSVG } from '../sheet/render.js';
 import { shareOrDownload } from '../util.js';
+import { openLiveVideo } from './livevideo.js';
 
 const SIDES = ['home', 'away'];
 const STAT_BTNS = [['ace', 'Ace'], ['kill', 'Kill'], ['assist', 'Assist'], ['dig', 'Dig'], ['block', 'Block'], ['err', 'Error']];
@@ -188,6 +189,7 @@ export async function mount(root, { params }, ctx) {
       ['Penalty warning…', () => penaltyDialog('warning')],
       ['Penalty point…', () => penaltyDialog('point')],
       ['Add a note to the scoresheet', noteDialog],
+      ['Live video for family', () => openLiveVideo(session)],
       ['Game info (date, place, times)', infoDialog],
       ['History / fix something older', historyDialog],
     ];

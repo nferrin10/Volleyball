@@ -6,3 +6,11 @@ await build({
   outfile: 'public/vendor/pdf-lib.mjs', legalComments: 'none',
 });
 console.log('vendor/pdf-lib.mjs built');
+
+// QR code generator (qrcode-generator, MIT) as a browser ES module.
+await build({
+  stdin: { contents: "import qrcode from 'qrcode-generator'; export default qrcode;", resolveDir: process.cwd() },
+  bundle: true, format: 'esm', minify: true, target: 'es2020',
+  outfile: 'public/vendor/qrcode.mjs', legalComments: 'none',
+});
+console.log('vendor/qrcode.mjs built');

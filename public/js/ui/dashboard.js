@@ -2,11 +2,16 @@ import { h, prettyDate } from '../util.js';
 import { listGames } from '../session.js';
 import { buildState } from '../engine/engine.js';
 import { resultLine } from '../reports.js';
+import { openLiveVideo } from './livevideo.js';
+import { openShareApp } from './shareapp.js';
 
 const I = {
   plus: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M16 6v20M6 16h20"/></svg>',
   sheet: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><rect x="4" y="5" width="24" height="22" rx="3"/><path d="M4 12h24M12 12v15M20 12v15"/></svg>',
   stats: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M7 26V14M16 26V6M25 26V18"/></svg>',
+  video: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="16" rx="3"/><path d="M21 14l8-4v12l-8-4z"/></svg>',
+  ball: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="16" cy="16" r="12"/><path d="M16 4c0 8 4 12 12 12M16 4c0 8-4 12-12 12M4 16c8 0 12 4 12 12M28 16c-8 0-12 4-12 12"/></svg>',
+  qr: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><rect x="4" y="4" width="9" height="9"/><rect x="19" y="4" width="9" height="9"/><rect x="4" y="19" width="9" height="9"/><path d="M19 19h4v4h-4zM25 25h3M19 26h2M26 19h2"/></svg>',
   report: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h10l6 6v20H9z"/><path d="M19 3v6h6M16 14v9M12 19l4 4 4-4"/></svg>',
 };
 
@@ -33,6 +38,9 @@ export async function mount(root, { shell }, ctx) {
     tile('hero', I.plus, 'New Game', 'Enter teams and start scoring', () => ctx.go('/new'), 'tile-new'),
     tile('', I.sheet, 'Live Scoresheet', 'See the form fill itself out', () => (latest ? ctx.go('/sheet/' + (active || latest).id) : ctx.go('/new')), 'tile-sheet'),
     tile('', I.stats, 'Player Stats', 'Track each player’s performance', () => ctx.go('/stats' + (latest ? '/' + (active || latest).id : '')), 'tile-stats'),
+    tile('', I.ball, 'Practice Game', 'Try it with sample teams. Nothing is saved.', () => ctx.go('/new?practice=1'), 'tile-practice'),
+    tile('', I.video, 'Live Video', 'Share a YouTube watch link with family', async () => openLiveVideo(active ? await ctx.session(active.id) : null), 'tile-video'),
+    tile('', I.qr, 'Share the App', 'QR code so anyone can start scoring. No login.', () => openShareApp(), 'tile-share'),
     tile('', I.report, 'Game Reports', 'Download scoresheet and stats', () => ctx.go('/reports'), 'tile-reports')));
 
   sections.push(h('div', { class: 'learn', 'data-tour': 'learn' },
